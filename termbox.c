@@ -149,8 +149,7 @@ PHP_MINIT_FUNCTION(termbox)
     ZEND_INIT_MODULE_GLOBALS(termbox, _termbox_init_globals, NULL);
 
     /** Register constants */
-    #define PHP_TERMBOX_CONSTANT(NAME) \
-        zend_register_long_constant(#NAME, sizeof(#NAME), NAME, CONST_CS | CONST_PERSISTENT, module_number TSRMLS_CC);
+    #define PHP_TERMBOX_CONSTANT(NAME) REGISTER_LONG_CONSTANT(#NAME, NAME, CONST_CS | CONST_PERSISTENT);
     #include "constants.h"
     #undef PHP_TERMBOX_CONSTANT
     return SUCCESS;
@@ -262,7 +261,8 @@ PHP_FUNCTION(termbox_clear)
    initialized yet. */
 PHP_FUNCTION(termbox_set_clear_attributes)
 {
-    long fg, bg;
+    zend_long fg, bg;
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &fg, &bg) == FAILURE) {
         return;
     }
@@ -292,7 +292,8 @@ PHP_FUNCTION(termbox_present)
    Cursor is hidden by default. Return FALSE if not initialized yet. */
 PHP_FUNCTION(termbox_set_cursor)
 {
-    long x, y;
+    zend_long x, y;
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll", &x, &y) == FAILURE) {
         return;
     }
@@ -307,7 +308,8 @@ PHP_FUNCTION(termbox_set_cursor)
    position. Return FALSE if not initialized yet. */
 PHP_FUNCTION(termbox_change_cell)
 {
-    long x, y, ch, fg, bg;
+    zend_long x, y, ch, fg, bg;
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lllll", &x, &y, &ch, &fg, &bg) == FAILURE) {
         return;
     }
@@ -322,7 +324,8 @@ PHP_FUNCTION(termbox_change_cell)
     if not yet initialized. */
 PHP_FUNCTION(termbox_set_input_mode)
 {
-    long mode;
+    zend_long mode;
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &mode) == FAILURE) {
         return;
     }
@@ -354,7 +357,8 @@ PHP_FUNCTION(termbox_get_input_mode) {
    yet initialized. */
 PHP_FUNCTION(termbox_set_output_mode)
 {
-    long mode;
+    zend_long mode;
+
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &mode) == FAILURE) {
         return;
     }
@@ -398,7 +402,7 @@ static void _termbox_event_to_php_array(struct tb_event *event, zval *event_arr)
    NULL. If an error occurrs, return FALSE. */
 PHP_FUNCTION(termbox_peek_event)
 {
-    long timeout_ms;
+    zend_long timeout_ms;
     struct tb_event event;
     int rc;
 
@@ -449,7 +453,7 @@ PHP_FUNCTION(termbox_poll_event)
 PHP_FUNCTION(termbox_utf8_char_to_unicode)
 {
     char *str;
-    int str_len;
+    strsize str_len;
     uint32_t unicode_int;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &str, &str_len) == FAILURE) {
@@ -470,7 +474,7 @@ PHP_FUNCTION(termbox_utf8_unicode_to_char)
 {
     char str[7];
     int str_len;
-    long unicode;
+    zend_long unicode;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "l", &unicode) == FAILURE) {
         return;
@@ -483,7 +487,7 @@ PHP_FUNCTION(termbox_utf8_unicode_to_char)
         str_len = 0;
     }
 
-    RETURN_STRINGL(str, str_len, 1);
+    TERMBOX_RETSTRL(str, str_len);
 }
 /* }}} */
 
@@ -493,8 +497,8 @@ PHP_FUNCTION(termbox_utf8_unicode_to_char)
 PHP_FUNCTION(termbox_print)
 {
     char *str;
-    int str_len;
-    long x, y, fg, bg;
+    strsize str_len;
+    zend_long x, y, fg, bg;
     uint32_t unicode;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sllll", &str, &str_len, &x, &y, &fg, &bg) == FAILURE) {

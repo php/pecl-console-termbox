@@ -89,6 +89,16 @@ PHP_FUNCTION(termbox_last_error);
 #define TERMBOX_G(v) (termbox_globals.v)
 #endif
 
+#if PHP_MAJOR_VERSION < 7
+typedef long zend_long;
+typedef int  strsize;
+#define TERMBOX_RETSTRL(a,l) RETURN_STRINGL(a,l,1)
+#else
+typedef size_t strsize;
+#define TSRMLS_CC
+#define TERMBOX_RETSTRL(a,l) RETURN_STRINGL(a,l)
+#endif
+
 #endif    /* PHP_TERMBOX_H */
 
 /*
